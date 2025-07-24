@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Producto;
+use App\Models\Venta;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,8 +21,8 @@ class Detalle_VentaFactory extends Factory
         return [
             "cantidad" => $this->faker->numberBetween(1, 10),
             "estado" => $this->faker->randomElement(["activo", "inactivo"]),
-            "id_producto" => \App\Models\Producto::factory(),
-            "id_venta" => \App\Models\Venta::factory(),
+            "id_producto" => Producto::inRandomOrder()->first()->id,
+            "id_venta" => Venta::inRandomOrder()->first()->id,
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,7 +19,7 @@ class VentaFactory extends Factory
     {
         return [
             "metodo_pago" => $this->faker->randomElement(["efectivo", "tarjeta", "qr", "cupon"]),
-            "id_usuario" => \App\Models\Usuario::factory(),
+            "id_usuario" => User::inRandomOrder()->first()->id,
             "total" => $this->faker->randomFloat(3, 10, 99),
             "estado" => $this->faker->randomElement(["pagado", "fallo", "pendiente"]),
         ];

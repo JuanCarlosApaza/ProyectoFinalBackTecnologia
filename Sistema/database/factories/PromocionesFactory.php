@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Producto;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,7 +20,7 @@ class PromocionesFactory extends Factory
         return [
             "imagen"=>$this->faker->imageURL(),
             "estado"=>$this->faker->boolean(),
-            "id_producto"=>\App\Models\Producto::factory(),
+            "id_producto"=>Producto::inRandomOrder()->first()->id,
 
         ];
     }

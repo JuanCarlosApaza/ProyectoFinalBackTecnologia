@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('estado');
             $table->unsignedBigInteger('id_usuario');
             $table->decimal('total',8,2);
-            $table->foreign('id_usuario')->references('id')->on('usuarios');
+            $table->foreign('id_usuario')->references('id')->on('users');
             $table->timestamps();
         });
     }
