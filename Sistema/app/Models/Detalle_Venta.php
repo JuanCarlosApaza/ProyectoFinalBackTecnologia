@@ -14,4 +14,12 @@ class Detalle_Venta extends Model
         "cantidad",
         "estado",
     ];
+
+    public function venta() {
+        return $this->belongsTo(Venta::class, 'id_venta');
+    }
+
+    public function producto() {
+        return $this->belongsTo(Producto::class, 'id_producto');
+    }
 }

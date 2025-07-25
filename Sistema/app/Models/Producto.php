@@ -19,10 +19,20 @@ class Producto extends Model
         "imagen",
         "descuento",
     ];
-    public function empresa(){
-        return $this->belongsTo(Empresa::class,"id_empresa");
+    
+    public function empresa() {
+        return $this->belongsTo(Empresa::class);
     }
-    public function categoria(){
-        return $this->belongsTo(Categoria::class,"id_categoria");
+
+    public function categoria() {
+        return $this->belongsTo(Categoria::class);
+    }
+
+    public function promociones() {
+        return $this->hasMany(Promociones::class, 'id_producto');
+    }
+
+    public function detallesVenta() {
+        return $this->hasMany(Detalle_Venta::class, 'id_producto');
     }
 }

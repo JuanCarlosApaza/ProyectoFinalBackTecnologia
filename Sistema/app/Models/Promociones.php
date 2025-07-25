@@ -13,4 +13,8 @@ class Promociones extends Model
         "id_producto",
         "estado",
     ];
+
+    public function producto() {
+        return $this->belongsTo(Producto::class, 'id_producto');
+    }
 }
