@@ -34,4 +34,38 @@ class EmpresasController extends Controller
          ]);
          return response()->json($empresa);
     }
+     public function buscar($id)
+    {
+        $empresa = Empresa::find($id);
+        return response()->json($empresa);
+    }
+    public function actualizar(Request $request, $id){
+        $empresa = Empresa::find($id);
+        $request->validate([
+            "nombre" => "required|string",
+            "direccion" => "required|string",
+            "telefono" => "required|string",
+            "estado"=> "required|string",
+
+        ]);
+        if($request->hasFile("logo")){
+            $rutaimagen = $request->file("logo")->store("imagenes","public");
+            $empresa->logo = $rutaimagen;
+        }
+            $empresa->nombre=$request->input("nombre");
+            $empresa->direccion=$request->input("direccion");
+            $empresa->telefono=$request->input("telefono");
+            $empresa->estado=$request->input("estado");
+            $empresa->save();
+       
+         return response()->json($empresa);
+
+    }
+    public function delete($id)
+    {
+        $categoria = Empresa::findOrFail($id);
+        $categoria->delete();
+
+        return response()->json(['mensaje' => 'Usuario eliminado correctamente'], 200);
+    }
 }

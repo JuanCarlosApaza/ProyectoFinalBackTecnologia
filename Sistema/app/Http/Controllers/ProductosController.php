@@ -43,6 +43,14 @@ class ProductosController extends Controller
             "descuento" => $request->input("descuento"),
             "estado" => $request->input("estado"),
         ]);
+        return response()->json($productos, 200);
+    }
+    public function delete($id)
+    {
+        $categoria = Producto::findOrFail($id);
+        $categoria->delete();
+
+        return response()->json(['mensaje' => 'Usuario eliminado correctamente'], 200);
     }
 
 }

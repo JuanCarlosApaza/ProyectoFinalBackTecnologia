@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class VentaController extends Controller
 {
     public function index(){
-        $ventas = Venta::all();
+        $ventas = Venta::with("usuario")->get();
 
         return response()->json($ventas);
     }

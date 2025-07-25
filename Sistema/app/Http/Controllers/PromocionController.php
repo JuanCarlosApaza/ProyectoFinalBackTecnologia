@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class PromocionController extends Controller
 {
     public function index(){
-        $promocion = Promociones::all();
+        $promocion = Promociones::with("producto")->get();
 
         return response()->json($promocion);
     }

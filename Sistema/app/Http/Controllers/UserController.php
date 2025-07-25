@@ -19,20 +19,19 @@ class UserController extends Controller
         return response()->json(['Usuario encontrado' => $usuario], 200);
     }
     public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|string|min:8|confirmed',
+    ]);
 
-        $data = $request->all();
-        $data['password'] = bcrypt($data['password']);  // Encriptar la contraseña
+    $data = $request->only(['name', 'email', 'password']);
+    $data['password'] = bcrypt($data['password']);  
+    $usuario = User::create($data);
 
-        $usuario = User::create($data);
-
-        return response()->json(['Usuario' => $usuario], 201);
-    }
+    return response()->json(['Usuario' => $usuario], 201);
+}
 
 
     public function update(Request $request,$id)

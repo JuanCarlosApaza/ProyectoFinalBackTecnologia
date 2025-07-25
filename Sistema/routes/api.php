@@ -9,19 +9,33 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\VentaController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoriasController;
+use App\Http\Controllers\EmpresasController;
+use App\Models\Categoria;
+use App\Models\Empresa;
+use App\Models\Producto;
 
 //---------------------Prodcutos-----------------
-Route::get('/productos/{id}',action: [ProductosController::class,"indexfilter"]);
-Route::get('/productos',action: [ProductosController::class,"index"]);
-Route::post("/productos",[CategoriasController::class,"crear"]);
+Route::get('/productos/{id}', [ProductosController::class,"indexfilter"]);
+Route::get('/productos', [ProductosController::class,"index"]);
+Route::post("/productos",[ProductosController::class,"crear"]);
+Route::delete('/productos/eliminar/{id}', [ProductosController::class, 'delete']);
 
 // ----------Categorias-----------
 Route::get("/categorias",[CategoriasController::class,"index"]);
 Route::get("/categoriasfiltrar",[CategoriasController::class,"indexfilter"]);
 Route::post("/categorias",[CategoriasController::class,"crear"]);
+Route::get("/categorias/buscar/{id}",[CategoriasController::class,"buscar"]);
+Route::post("/categorias/actualizar/{categoria}", [CategoriasController::class, "actualizar"]);
+Route::delete('/categorias/eliminar/{id}', [CategoriasController::class, 'delete']);
+
+
 //------------Empresas
-Route::get("/empresas",[CategoriasController::class,"index"]);
-Route::post("/empresas",[CategoriasController::class,"crear"]);
+Route::get("/empresas",[EmpresasController::class,"index"]);
+Route::post("/empresas",[EmpresasController::class,"crear"]);
+Route::get("/empresas/buscar/{id}",[EmpresasController::class,"buscar"]);
+Route::post("/empresas/actualizar/{empresas}", [EmpresasController::class, "actualizar"]);
+Route::delete('/empresas/eliminar/{id}', [EmpresasController::class, 'delete']);
+
 //CURD usuarios
 Route::get('/usuarios',[UserController::class,'index']);
 
@@ -51,7 +65,7 @@ Route::post('/promociones/crear', [PromocionController::class, 'store']);
 
 Route::get('/promociones/buscar/{id}', [PromocionController::class, 'search']);
 
-Route::put('/promociones/actualizar/{id}', [PromocionController::class, 'update']);
+Route::post('/promociones/actualizar/{id}', [PromocionController::class, 'update']);
 
 Route::delete('/promociones/eliminar/{id}', [PromocionController::class, 'delete']);
 
