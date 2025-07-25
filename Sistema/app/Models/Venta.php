@@ -14,4 +14,12 @@ class Venta extends Model
         "total",
         "estado",
     ];
+
+    public function usuario() {
+        return $this->belongsTo(User::class, 'id_usuario');
+    }
+
+    public function detalles() {
+        return $this->hasMany(Detalle_Venta::class, 'id_venta');
+    }
 }

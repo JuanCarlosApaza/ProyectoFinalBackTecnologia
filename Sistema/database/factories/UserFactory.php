@@ -23,11 +23,18 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        static $index=0;
+        $array_pws=[
+            'admin123',
+            'user456',
+            'test789',
+            'clave000'
+        ];
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => Hash::make($array_pws [$index++ % count($array_pws)]),
             'remember_token' => Str::random(10),
         ];
     }

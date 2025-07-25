@@ -7,6 +7,7 @@ use \App\Models\Producto;
 
 class ProductosController extends Controller
 {
+
     public function indexfilter($id)
     {
         $productos = Producto::with(['empresa', 'categoria'])->where("id_categoria", "{$id}")->get();
@@ -43,4 +44,5 @@ class ProductosController extends Controller
             "estado" => $request->input("estado"),
         ]);
     }
+
 }
