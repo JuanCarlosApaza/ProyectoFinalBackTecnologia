@@ -14,7 +14,6 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
-        // Intentar autenticación
         if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
                 'success' => false,
@@ -22,24 +21,36 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $request->session()->regenerate();
+        // Obtener el usuario autenticado
+        $user = Auth::user();
+
+        $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'success' => true,
             'message' => 'Inicio de sesión exitoso',
-            'user' => Auth::user()
-        ], 200);
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'user' => $user
+        ]);
     }
 
     public function logout(Request $request)
     {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        if ($request->user()) {
 
+            $request->user()->currentAccessToken()->delete();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Sesión cerrada exitosamente.'
+            ], 200);
+        }
+
+        // Si no hay usuario autenticado, o el token ya es inválido
         return response()->json([
-            'success' => true,
-            'message' => 'Sesión cerrada correctamente'
-        ], 200);
+            'success' => false,
+            'message' => 'No hay usuario autenticado o el token es inválido.'
+        ], 401);
     }
 }

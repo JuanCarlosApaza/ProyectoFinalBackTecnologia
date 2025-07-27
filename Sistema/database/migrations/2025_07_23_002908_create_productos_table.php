@@ -19,13 +19,9 @@ return new class extends Migration
             $table->string('imagen');
             $table->decimal('precio',8,2);
             $table->integer('cantidad');
-            $table->unsignedBigInteger('id_empresa');
-            $table->unsignedBigInteger('id_categoria');
-            $table->foreign('id_empresa')->references('id')->on('empresas');
-            $table->foreign('id_categoria')->references('id')->on('categorias');
+            $table->foreignId('id_categoria')->constrained('categorias')->onDelete('cascade');
+            $table->foreignId('id_empresa')->constrained('empresas')->onDelete('cascade');
             $table->integer('descuento');
-            
-
             $table->timestamps();
         });
     }

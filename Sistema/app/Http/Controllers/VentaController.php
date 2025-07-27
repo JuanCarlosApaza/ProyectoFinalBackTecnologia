@@ -19,14 +19,37 @@ class VentaController extends Controller
         return response()->json(['Venta encontrada' => $venta], 200);
     }
 
+    public function filter($colum, $value)
+    {
+        $allowed = ['id', 'metodo_pago','estado','total','id_usuario'];
+        if (!in_array($colum, $allowed)) {
+            return response()->json(['error' => 'Columna no permitida'], 400);
+        }
+
+        $promo = Venta::with('usuario','detalles')->where($colum, $value)->first();
+
+        if (!$promo) {
+            return response()->json(['message' => 'No se encontró detalle de venta'], 404);
+        }
+
+        return response()->json($promo);
+    }
+
     public function store(Request $request)
     {
-        $request->validate([
-            'metodo_pago' => 'required|string|max:255',
-            'estado' => 'required|string|max:255',
-            'id_usuario' => 'required|exists:users,id',
-            'total' => 'required|numeric|min:0',
-        ]);
+        try {
+            $request->validate([
+                'metodo_pago' => 'required|string|max:255',
+                'estado' => 'required|string|max:255',
+                'id_usuario' => 'required|exists:users,id',
+                'total' => 'required|numeric|min:0',
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                "mensaje" => "Errores de validación en ventas",
+                "errores" => $e->errors(),
+            ], 422);
+        }
 
         $venta = Venta::create($request->all());
 
@@ -37,12 +60,19 @@ class VentaController extends Controller
     {
         $venta = Venta::findOrFail($id);
 
-        $request->validate([
-            'metodo_pago' => 'required|string|max:255',
-            'estado' => 'required|string|max:255',
-            'id_usuario' => 'required|exists:users,id',
-            'total' => 'required|numeric|min:0',
-        ]);
+        try {
+            $request->validate([
+                'metodo_pago' => 'required|string|max:255',
+                'estado' => 'required|string|max:255',
+                'id_usuario' => 'required|exists:users,id',
+                'total' => 'required|numeric|min:0',
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                "mensaje" => "Errores de validación en ventas",
+                "errores" => $e->errors(),
+            ], 422);
+        }
 
         $venta->update($request->all());
 
@@ -51,9 +81,14 @@ class VentaController extends Controller
     
     public function delete($id)
     {
-        $venta = Venta::findOrFail($id);
-        $venta->delete();
+        try {
+            $venta = Venta::findOrFail($id);
+            $venta->delete();
 
-        return response()->json(['mensaje' => 'Venta eliminada correctamente'], 200);
+            return response()->json(['mensaje' => 'Venta eliminada correctamente'], 200);
+
+        }catch (\Exception $e) {
+            return response()->json(['error' => 'Error inesperado: ' . $e->getMessage()], 500);
+        }
     }
 }
