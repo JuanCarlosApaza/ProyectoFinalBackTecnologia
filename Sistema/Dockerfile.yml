@@ -1,0 +1,31 @@
+# Usa una imagen base con PHP y las extensiones necesarias
+FROM php:8.3.6-fpm
+
+# Instala dependencias del sistema
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    zip \
+    unzip
+
+# Instala extensiones de PHP
+RUN docker-php-ext-install pdo pdo_pgsql gd
+# Cambia a pdo_mysql si usas MySQL
+
+# Instala Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Define el directorio de trabajo
+WORKDIR /var/www/html
+
+# Copia los archivos de la aplicación
+COPY . .
+
+# Expone el puerto 9000 (el puerto por defecto de PHP-FPM)
+EXPOSE 9000
+
+# Inicia PHP-FPM
+CMD ["php-fpm"]
