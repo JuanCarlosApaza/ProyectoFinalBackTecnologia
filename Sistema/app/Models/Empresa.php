@@ -15,7 +15,8 @@ class Empresa extends Model
         "telefono",
         "estado",
     ];
+    
     public function productos(){
-        return $this->hasMany(Producto::class);
+        return $this->hasMany(Producto::class, 'id_empresa', 'id');
     }
 }

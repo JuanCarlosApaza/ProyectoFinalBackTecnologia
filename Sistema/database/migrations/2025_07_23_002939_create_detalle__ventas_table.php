@@ -14,10 +14,8 @@ return new class extends Migration
         Schema::create('detalle__ventas', function (Blueprint $table) {
             $table->id();
             $table->integer('cantidad');
-            $table->unsignedBigInteger('id_producto');
-            $table->foreign('id_producto')->references('id')->on('productos');
-            $table->unsignedBigInteger('id_venta');
-            $table->foreign('id_venta')->references('id')->on('ventas');
+            $table->foreignId('id_producto')->constrained('productos')->onDelete('cascade');
+            $table->foreignId('id_venta')->constrained('ventas')->onDelete('cascade');
             $table->string('estado');
             $table->timestamps();
         });

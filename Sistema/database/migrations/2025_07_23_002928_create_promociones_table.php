@@ -15,8 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('imagen');
             $table->boolean('estado');
-            $table->unsignedBigInteger('id_producto');
-            $table->foreign('id_producto')->references('id')->on('productos');
+            $table->foreignId('id_producto')->constrained('productos')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -13,21 +13,31 @@ class ProductosController extends Controller
         $productos = Producto::with(['empresa', 'categoria'])->where("id_categoria", "{$id}")->get();
         return response()->json($productos, 200);
     }
+    
     public function index()
     {
         $productos = Producto::with(["categoria", "empresa"])->get();
         return response()->json($productos, 200);
     }
+
     public function crear(Request $request)
     {
-        $request->validate([
+        try {
+            $request->validate([
             "nombre" => "required|string|max:255",
             "descripcion" => "required|string|max:255",
             "estado" => "required|string|max:255",
             "cantidad" => "required|integer",
             "descuento" => "nullable|integer",
             "precio" => "required|numeric",
-        ]);
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                "mensaje" => "Errores de validación en productos",
+                "errores" => $e->errors(),
+            ], 422);
+        }
+
         $rutaimagen = null;
         if ($request->hasFile("imagen")) {
             $rutaimagen = $request->file("imagen")->store("imagenes", "public");
@@ -47,10 +57,15 @@ class ProductosController extends Controller
     }
     public function delete($id)
     {
-        $categoria = Producto::findOrFail($id);
-        $categoria->delete();
+        try {
+            $categoria = Producto::findOrFail($id);
+            $categoria->delete();
 
-        return response()->json(['mensaje' => 'Usuario eliminado correctamente'], 200);
+            return response()->json(['mensaje' => 'Usuario eliminado correctamente'], 200);
+
+        }catch (\Exception $e) {
+            return response()->json(['error' => 'Error inesperado: ' . $e->getMessage()], 500);
+        }
     }
 
 }
