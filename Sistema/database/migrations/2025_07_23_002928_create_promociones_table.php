@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('promociones', function (Blueprint $table) {
             $table->id();
-            $table->string('imagen');
+            $table->string('imagen')->nullable();
             $table->boolean('estado');
             $table->foreignId('id_producto')->constrained('productos')->onDelete('cascade');
             $table->timestamps();

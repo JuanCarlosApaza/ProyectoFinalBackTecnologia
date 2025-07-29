@@ -13,6 +13,6 @@ class Detalle_VentasSeeder extends Seeder
      */
     public function run(): void
     {
-        Detalle_Venta::factory()->count(30)->create();
+        Detalle_Venta::factory()->count(5)->create();
     }
 }

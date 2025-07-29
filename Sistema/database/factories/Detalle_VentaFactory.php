@@ -21,6 +21,7 @@ class Detalle_VentaFactory extends Factory
         return [
             "cantidad" => $this->faker->numberBetween(1, 10),
             "estado" => $this->faker->randomElement(["activo", "inactivo"]),
+            
             "id_producto" => Producto::inRandomOrder()->first()->id,
             "id_venta" => Venta::inRandomOrder()->first()->id,
         ];

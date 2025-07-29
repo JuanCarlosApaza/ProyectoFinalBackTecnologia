@@ -18,7 +18,6 @@ class PromocionesFactory extends Factory
     public function definition(): array
     {
         return [
-            "imagen"=>$this->faker->imageURL(),
             "estado"=>$this->faker->boolean(),
             "id_producto"=>Producto::inRandomOrder()->first()->id,
 

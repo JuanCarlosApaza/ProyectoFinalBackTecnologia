@@ -15,6 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('nombre');
             $table->string('logo')->nullable();
+            $table->string('texto')->nullable();
+            $table->string('fondo')->nullable();
+            $table->foreignId('id_usuario')->constrained('users')->onDelete('cascade');
             $table->string('direccion');
             $table->string('telefono');
             $table->string('estado');

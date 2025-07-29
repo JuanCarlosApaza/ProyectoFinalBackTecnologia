@@ -9,7 +9,8 @@ use App\Http\Controllers\VentaController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoriasController;
 use App\Http\Controllers\EmpresasController;
-
+use App\Http\Controllers\VentaCompletaController;
+use Illuminate\Http\Request;
 
 //---------------------Login (Pública)-----------------
 // Esta ruta es para iniciar sesión y no requiere autenticación previa.
@@ -23,6 +24,9 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 //---------------------Productos (Públicas)-----------------
 Route::get('/productos/{id}', [ProductosController::class, "indexfilter"]);
 Route::get('/productos', [ProductosController::class, "index"]);
+Route::get("/productos/buscar/{id}", [ProductosController::class, "buscar"]);
+Route::get('/productos/filtrar/{colum}/{value}', [ProductosController::class, "filter"]);
+Route::get("/productos/search/{id}", [ProductosController::class, "BuscarProducto"]);
 
 //---------------------Empresas (Públicas)-----------------
 Route::get("/empresas", [EmpresasController::class, "index"]);
@@ -31,28 +35,21 @@ Route::get('/empresas/filtrar/{colum}/{value}', [EmpresasController::class, 'fil
 
 //---------------------Categorias (Públicas)-----------
 Route::get("/categorias", [CategoriasController::class, "index"]);
-Route::get("/categoriasfiltrar", [CategoriasController::class, "indexfilter"]);
-Route::get("/categorias/buscar/{id}",[CategoriasController::class,"buscar"]); 
+Route::get("/categoriasfiltrar/{colum}/{value}", [CategoriasController::class, "indexfilter"]);
+Route::get("/categorias/buscar/{id}", [CategoriasController::class, "buscar"]);
 
 //---------------------Usuarios (Públicas - Solo Lectura)-----------------
-Route::get('/usuarios',[UserController::class,'index']);
 Route::get('/usuarios/buscar/{id}', [UserController::class, 'search']);
 Route::get('/usuarios/filtrar/{colum}/{value}', [UserController::class, 'filter']);
+Route::post('/usuarios/crear', [UserController::class, 'store']);
 
-//---------------------Ventas (Públicas - Solo Lectura)-----------------
-Route::get('/ventas',[VentaController::class,'index']);
-Route::get('/ventas/buscar/{id}', [VentaController::class, 'search']);
-Route::get('/ventas/filtrar/{colum}/{value}', [VentaController::class, 'filter']);
 
 //---------------------Promociones (Públicas - Solo Lectura)-----------------
-Route::get('/promociones',[PromocionController::class,'index']);
+Route::get('/promociones', [PromocionController::class, 'index']);
 Route::get('/promociones/buscar/{id}', [PromocionController::class, 'search']);
 Route::get('/promociones/filtrar/{colum}/{value}', [PromocionController::class, 'filter']);
 
-//---------------------Detalles de la ventas (Públicas - Solo Lectura)-----------------
-Route::get('/detalleventa',[DetalleVentaController::class,'index']);
-Route::get('/detalleventa/buscar/{id}', [DetalleVentaController::class, 'search']);
-Route::get('/detalleventa/filtrar/{colum}/{value}', [DetalleVentaController::class, 'filter']);
+
 
 
 //-----------------------------------------------------
@@ -60,6 +57,11 @@ Route::get('/detalleventa/filtrar/{colum}/{value}', [DetalleVentaController::cla
 // Todas las rutas dentro de este grupo requieren un token de Sanctum válido.
 //-----------------------------------------------------
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+
+    Route::get('/usuarios', [UserController::class, 'index']);
 
     //---------------------Cerrar sesión (Requiere autenticación)-----------------
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -71,16 +73,62 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //---------------------Categorias (Solo Admin para CUD)-----------
     Route::middleware('role:admin')->group(function () {
-        Route::post("/categorias",[CategoriasController::class,"crear"]);
+        Route::get('/categoriasadmin', action: [CategoriasController::class, "indexAdmin"]);
+        Route::post("/categorias", [CategoriasController::class, "crear"]);
         Route::post("/categorias/actualizar/{categoria}", [CategoriasController::class, "actualizar"]);
         Route::delete('/categorias/eliminar/{id}', [CategoriasController::class, 'delete']);
     });
 
     //---------------------Empresas (Solo Admin para CUD)------------
     Route::middleware('role:admin')->group(function () {
-        Route::post("/empresas",[EmpresasController::class,"crear"]);
+        Route::get('/empresasadmin', action: [EmpresasController::class, "indexAdmin"]);
+        Route::post("/empresas/crear", [EmpresasController::class, "crear"]);
         Route::post("/empresas/actualizar/{empresas}", [EmpresasController::class, "actualizar"]);
         Route::delete('/empresas/eliminar/{id}', [EmpresasController::class, 'delete']);
+    });
+    //---------------------Prodcutos (Solo Admin para CUD)------------
+
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/productosadmin', action: [ProductosController::class, "indexAdmin"]);
+
+        Route::post("/productos", [ProductosController::class, "crear"]);
+        Route::post("/productos/actualizar/{id}", [ProductosController::class, "actualizar"]); // Asumiendo que tienes esta ruta de actualización
+        Route::delete('/productos/eliminar/{id}', [ProductosController::class, 'delete']);
+    });
+    //---------------------Detalle (Solo Admin para CUD)------------
+
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/detalleventa', [DetalleVentaController::class, 'index']);
+        Route::get('/detalleventa/buscar/{id}', [DetalleVentaController::class, 'search']);
+        Route::get('/detalleventa/filtrar/{colum}/{value}', [DetalleVentaController::class, 'filter']);
+        Route::post('/ventas/completa', [VentaCompletaController::class, 'completa']);
+        //---------------------Detalles de la ventas (Solo Autenticación para CUD)-----------------
+        Route::post('/detalleventa/crear', [DetalleVentaController::class, 'store']);
+        Route::put('/detalleventa/actualizar/{id}', [DetalleVentaController::class, 'update']);
+        Route::delete('/detalleventa/eliminar/{id}', [DetalleVentaController::class, 'delete']);
+
+    });
+    //---------------------Ventas (Solo Admin para CUD)------------
+
+    Route::middleware('role:admin')->group(function () {
+        //---------------------Ventas (Públicas - Solo Lectura)-----------------
+        Route::get('/ventas', [VentaController::class, 'index']);
+        Route::get('/ventas/buscar/{id}', [VentaController::class, 'search']);
+        Route::get('/ventas/filtrar/{colum}/{value}', [VentaController::class, 'filter']);
+    });
+    //---------------------Usaurios (Solo Admin para CUD)------------
+
+    Route::middleware('role:admin')->group(function () {
+        Route::put('/usuarios/actualizar/{usuario}', [UserController::class, 'update']);
+        Route::delete('/usuarios/eliminar/{id}', [UserController::class, 'delete']);
+    });
+    //---------------------Promociones (Solo Admin para CUD)------------
+
+    Route::middleware('role:admin')->group(function () {
+        //---------------------Promociones (Solo Autenticación para CUD)-----------------
+        Route::post('/promociones/crear', [PromocionController::class, 'store']);
+        Route::post('/promociones/actualizar/{id}', [PromocionController::class, 'update']);
+        Route::delete('/promociones/eliminar/{id}', [PromocionController::class, 'delete']);
     });
 
 
@@ -89,29 +137,12 @@ Route::middleware('auth:sanctum')->group(function () {
     // Estas rutas son accesibles por cualquier usuario que tenga un token válido.
     //-----------------------------------------------------
 
-    //---------------------Productos (Solo Autenticación para CUD)-----------------
-    Route::post("/productos",[ProductosController::class,"crear"]);
-    Route::put("/productos/actualizar/{id}", [ProductosController::class, "actualizar"]); // Asumiendo que tienes esta ruta de actualización
-    Route::delete('/productos/eliminar/{id}', [ProductosController::class, 'delete']);
 
-    //---------------------Usuarios (Solo Autenticación para CUD)-----------------
-    Route::post('/usuarios/crear', [UserController::class, 'store']);
-    Route::put('/usuarios/actualizar/{usuario}', [UserController::class, 'update']);
-    Route::delete('/usuarios/eliminar/{id}', [UserController::class, 'delete']);
 
-    //---------------------Ventas (Solo Autenticación para CUD)-----------------
-    Route::post('/ventas/crear', [VentaController::class, 'store']);
-    Route::put('/ventas/actualizar/{id}', [VentaController::class, 'update']);
-    Route::delete('/ventas/eliminar/{id}', [VentaController::class, 'delete']);
 
-    //---------------------Promociones (Solo Autenticación para CUD)-----------------
-    Route::post('/promociones/crear', [PromocionController::class, 'store']);
-    Route::post('/promociones/actualizar/{id}', [PromocionController::class, 'update']);
-    Route::delete('/promociones/eliminar/{id}', [PromocionController::class, 'delete']);
 
-    //---------------------Detalles de la ventas (Solo Autenticación para CUD)-----------------
-    Route::post('/detalleventa/crear', [DetalleVentaController::class, 'store']);
-    Route::put('/detalleventa/actualizar/{id}', [DetalleVentaController::class, 'update']);
-    Route::delete('/detalleventa/eliminar/{id}', [DetalleVentaController::class, 'delete']);
+
+
+
 
 });

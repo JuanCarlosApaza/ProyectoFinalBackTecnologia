@@ -13,6 +13,7 @@ class Detalle_Venta extends Model
         "id_venta",
         "cantidad",
         "estado",
+        "descuento",
     ];
 
     public function venta() {

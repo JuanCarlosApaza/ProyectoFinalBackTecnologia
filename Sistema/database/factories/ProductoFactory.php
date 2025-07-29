@@ -30,7 +30,6 @@ class ProductoFactory extends Factory
             "cantidad" => $this->faker->numberBetween(10, 100),
             "descripcion" => $this->faker->catchPhrase(),
             "estado" => $this->faker->randomElement(["vencido", "agotado", "stock"]),
-            "imagen" => $this->faker->imageURL(),
             "descuento" => $this->faker->randomElement([0, 0, 10]),
         ];
     }

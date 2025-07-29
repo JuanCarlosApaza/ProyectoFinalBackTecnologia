@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Promociones;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class PromocionController extends Controller
 {

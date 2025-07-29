@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('nombre');
             $table->string('imagen')->nullable();
+            $table->string('texto')->nullable();
+            $table->string('fondo')->nullable();
             $table->boolean('estado');
             $table->timestamps();
         });

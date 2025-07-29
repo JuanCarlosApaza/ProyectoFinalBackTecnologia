@@ -10,21 +10,36 @@ class CategoriasController extends Controller
 {
     public function index()
     {
+        $categorias = Categoria::where('estado', true)->get();
+        return response()->json($categorias);
+    }
+    public function indexAdmin()
+    {
         $categorias = Categoria::all();
         return response()->json($categorias);
     }
 
-    public function indexfilter()
+    public function indexfilter($colum, $value)
+    
     {
-        $categorias = Categoria::where("estado", true)->get();
+        $allowed = ['id', 'id_producto','estado'];
+        if (!in_array($colum, $allowed)) {
+            return response()->json(['error' => 'Columna no permitida'], 400);
+        }
+        $categorias = Categoria::where($colum, $value)->get();
+        if(!$categorias){
+            return response()->json(['error'=> 'no encontro'],400);
+        }
         return response()->json($categorias);
     }
+    
 
     public function crear(Request $request)
     {
-        try {$request->validate([
-            "nombre" => "required|string|max:255",
-            "estado" => "required|boolean",
+        try {
+            $request->validate([
+                "nombre" => "required|string|max:255",
+                "estado" => "required|boolean",
             ]);
         } catch (ValidationException $e) {
             return response()->json([
@@ -40,6 +55,8 @@ class CategoriasController extends Controller
         $categoria = Categoria::create([
             "nombre" => $request->input("nombre"),
             "estado" => $request->input("estado"),
+            "texto" => $request->input("texto"),
+            "fondo" => $request->input("fondo"),
             "imagen" => $rutaimagen,
         ]);
         return response()->json($categoria);
@@ -58,9 +75,10 @@ class CategoriasController extends Controller
             return response()->json(['error' => 'Categoría no encontrada'], 404);
         }
 
-        try {$request->validate([
-            "nombre" => "required|string|max:255",
-            "estado" => "required|boolean",
+        try {
+            $request->validate([
+                "nombre" => "required|string|max:255",
+                "estado" => "required|boolean",
             ]);
         } catch (ValidationException $e) {
             return response()->json([
@@ -76,6 +94,8 @@ class CategoriasController extends Controller
 
         $categoria->nombre = $request->input("nombre");
         $categoria->estado = $request->input("estado");
+        $categoria->texto = $request->input("texto");
+        $categoria->fondo = $request->input("fondo");
         $categoria->save();
 
         return response()->json($categoria);
@@ -88,8 +108,7 @@ class CategoriasController extends Controller
             $categoria->delete();
 
             return response()->json(['mensaje' => 'Usuario eliminado correctamente'], 200);
-
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['error' => 'Error inesperado: ' . $e->getMessage()], 500);
         }
     }

@@ -13,7 +13,12 @@ class Empresa extends Model
         "logo",
         "direccion",
         "telefono",
+        "texto",
+        "fondo",
         "estado",
+        "id_usuario"
+
+
     ];
     
     public function productos(){
